@@ -1,2 +1,4 @@
 *.vcd
 *.cf
+provided/*
+.vscode
