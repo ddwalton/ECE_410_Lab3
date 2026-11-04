@@ -16,6 +16,6 @@ From the above figure and reading through the provided code for part 1, we can d
 10 | `rd_we` | "Write enable". If high, this allows registers to be written to, if low, this disallows registers to be written to.
 11 | `alu_sel` | This determines whether an immediate (`ext_imm`) or register 2 `rs2_data` is used as the second operand in the ALU.
 12 | `alu_ctrl` | Determines what operation to do in the ALU (e.g. XOR, AND, etc.).
-13 | `write_en` | "Write enable". The bit that allows/disallows writes to data memory (1kB RAM w/ synchronous read/writes).
+13 | `mem_we` | Data memory "Write enable". The bit that allows/disallows writes to data memory (1kB RAM w/ synchronous read/writes).
 14 | `res_sel` | "Result select". Determines whether to select the output from data memory or the output of the ALU to be fed back to `rd_data` (Destination register's data) and output buffer.
 15 | `out_en` | "Output Enable". If high, output buffer carries the signal from the result MUX to the output, else the output is floating/high impedance.
