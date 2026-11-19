@@ -25,7 +25,7 @@ ARCHITECTURE Structural OF single_cycle_riscv IS
     SIGNAL opcode : STD_LOGIC_VECTOR(6 DOWNTO 0);
     SIGNAL funct3, imm_sel, alu_ctrl : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL funct7_bit : STD_LOGIC;
-    SIGNAL Alu_src, Res_sel, Mem_we, rd_we, Out_en : STD_LOGIC;
+    SIGNAL Alu_src, Res_sel, Mem_we, rd_we, Out_en, pc_src : STD_LOGIC;
 BEGIN
     datapath : ENTITY work.lw_sw_datapath(structural)
         PORT MAP (
@@ -35,6 +35,7 @@ BEGIN
             Alu_src => Alu_src,
             Res_sel => Res_sel,
             Out_en => Out_en,
+            pc_src => pc_src,
             imm_sel => imm_sel,
             alu_ctrl => alu_ctrl,
             opcode => opcode,
@@ -55,6 +56,7 @@ BEGIN
             Mem_we => Mem_we,
             rd_we => rd_we,
             Out_en => Out_en,
+            pc_src => pc_src,
             imm_sel => imm_sel,
             alu_ctrl => alu_ctrl
         );

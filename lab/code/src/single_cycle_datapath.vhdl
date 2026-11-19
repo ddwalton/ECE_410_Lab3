@@ -22,6 +22,7 @@ ENTITY lw_sw_datapath IS
         Alu_src     : IN  STD_LOGIC;                  -- dp_11
         Res_sel     : IN  STD_LOGIC;                  -- dp_14
         Out_en      : IN  STD_LOGIC;                  -- dp_15
+        pc_src      : IN  STD_LOGIC; -- 0->increment +4; 1->use output of branch_adder
         imm_sel     : IN  STD_LOGIC_VECTOR(2 DOWNTO 0); -- dp_8
         alu_ctrl    : IN  STD_LOGIC_VECTOR(2 DOWNTO 0); -- dp_12
         opcode      : OUT STD_LOGIC_VECTOR(6 DOWNTO 0); -- dp_1
@@ -33,9 +34,9 @@ ENTITY lw_sw_datapath IS
 END ENTITY;
 
 ARCHITECTURE structural OF lw_sw_datapath IS
-
-    SIGNAL pc, pc_next                      : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL instruction, imm_ext, alu_result : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL br_taken, br_sel                  : STD_LOGIC;
+    SIGNAL pc, pc_next, pc_incr, pc_branch   : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL instruction, imm_ext, alu_result  : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL rs1_data, rs2_data, rd_data       : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL result_mux_o                      : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL alu_mux_o                         : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -45,6 +46,7 @@ BEGIN
     funct3     <= instruction(14 DOWNTO 12);
     funct7_bit <= instruction(30);
 
+    br_sel <= pc_src and br_taken;
 ------------------------------------------------------------------------
 -- FETCH BLOCK
 ------------------------------------------------------------------------
@@ -52,7 +54,7 @@ BEGIN
         PORT MAP (
             op_a => pc,
             op_b => x"00000004",
-            sum  => pc_next
+            sum  => pc_incr
         );
 
     dp_pc : ENTITY work.program_counter(Behavioral)
@@ -60,6 +62,29 @@ BEGIN
             clock   => clock,
             pc_out  => pc,
             pc_next => pc_next
+        );
+    
+    dp_branch_adder : ENTITY work.adder_32(Behavioral)
+        PORT MAP (
+            op_a => pc,
+            op_b => imm_ext,
+            sum => pc_branch
+        );
+
+    dp_branch_mux : ENTITY work.mux_2to1(Behavioral)
+        PORT MAP (
+            in0 => pc_incr,
+            in1 => pc_branch,
+            out_y => pc_next,
+            sel => br_sel
+        );
+
+    dp_branch_comparator : ENTITY work.branch_comparator(Behavioral)
+        PORT MAP (
+            rs1 => rs1_data,
+            rs2 => rs2_data,
+            br_ctrl => funct3,
+            br_taken => br_taken
         );
 
     dp_instr_mem : ENTITY work.instr_mem(rtl)

@@ -24,14 +24,18 @@ ENTITY controller IS
         Mem_we      : OUT STD_LOGIC;
         rd_we       : OUT STD_LOGIC;
         Out_en      : OUT STD_LOGIC;
+        pc_src      : OUT STD_LOGIC;
         imm_sel     : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         alu_ctrl    : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
 END ENTITY;
 
 ARCHITECTURE Behavioral OF controller IS
+    CONSTANT N_CONTROL_BITS : NATURAL := 11;
+
     -- "controls" is a compact control word encoding all the main control signals.
     -- Bit mapping (from MSB to LSB):
+    --   [10]  - Selects source of next PC value (0 = increment by 4, 1 = output of branch)
     --   [9]   - Selects ALU B operand source (0 = register, 1 = immediate)
     --   [8]   - Selects write-back data source (0 = ALU result, 1 = memory read)
     --   [7]   - Enables register file write
@@ -39,12 +43,12 @@ ARCHITECTURE Behavioral OF controller IS
     --   [5:3] - Selects immediate format depending on the instruction type (I, S, etc.)
     --   [2:0] - ALU control operation code
     --
-    -- Each instruction assigns a 10-bit pattern to "controls" that defines its full
+    -- Each instruction assigns a N_CONTROL_BITS-bit pattern to "controls" that defines its full
     -- control behavior in a single line using the WITH-SELECT statement below.
-    SIGNAL controls : STD_LOGIC_VECTOR(9 DOWNTO 0);
+    SIGNAL controls : STD_LOGIC_VECTOR(N_CONTROL_BITS - 1 DOWNTO 0);
     
     -- added for visibility in simulation
-    TYPE instruction IS (LW, SW, ADD, NOP);
+    TYPE instruction IS (LW, SW, ADD, NOP, B);
     SIGNAL instr : instruction := NOP;
     SIGNAL aux          : STD_LOGIC_VECTOR(10 DOWNTO 0);
 
@@ -52,11 +56,14 @@ ARCHITECTURE Behavioral OF controller IS
     CONSTANT OPCODE_LW  : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0000011";
     CONSTANT OPCODE_SW  : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0100011";
     CONSTANT OPCODE_R   : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0110011";
+    CONSTANT OPCODE_B   : STD_LOGIC_VECTOR(6 DOWNTO 0) := "1100011";
+
     -- Control signals per instruction
-    CONSTANT CTRL_LW  : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1110010100";
-    CONSTANT CTRL_SW  : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001100100";
-    CONSTANT CTRL_ADD : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010000100";
-    CONSTANT CTRL_NOP : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0000000000";
+    CONSTANT CTRL_LW  : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "01110010100";
+    CONSTANT CTRL_SW  : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "01001100100";
+    CONSTANT CTRL_ADD : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "00010000100";
+    CONSTANT CTRL_NOP : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "00000000000";
+    CONSTANT CTRL_B : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0)   := "10000101101";
 BEGIN
     PROCESS (opcode, funct3, funct7_bit)
     BEGIN
@@ -70,11 +77,19 @@ BEGIN
                 IF funct3 = "000" AND funct7_bit = '0' THEN
                     controls <= CTRL_ADD;
                 END IF;
+            WHEN OPCODE_B =>
+                CASE funct3 IS
+                    WHEN "000" | "001" | "100" | "101" | "110" | "111" =>
+                        controls <= CTRL_B;
+                    WHEN OTHERS =>
+                        controls <= CTRL_NOP;
+                END CASE;
             WHEN OTHERS =>
                 controls <= CTRL_NOP;
         END CASE;
     END PROCESS;
 
+    pc_src     <= controls(10);
     Alu_src    <= controls(9);
     Res_sel    <= controls(8);
     rd_we      <= controls(7);
