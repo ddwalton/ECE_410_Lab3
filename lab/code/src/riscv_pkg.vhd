@@ -4,21 +4,10 @@ use ieee.std_logic_1164.all;
 package riscv_pkg is
     subtype inst_bits_t is std_logic_vector(2 downto 0);
 
-    type inst_type_map_t is record
-        R : inst_bits_t;
-        I : inst_bits_t;
-        U : inst_bits_t;
-        S : inst_bits_t;
-        B : inst_bits_t;
-        J : inst_bits_t;
-    end record;
-
-    constant INST_TYPE : inst_type_map_t := (
-        R => "001",
-        I => "010",
-        U => "011",
-        S => "100",
-        B => "101",
-        J => "110"
-    );
+    constant R_TYPE : inst_bits_t := "001";
+    constant I_TYPE : inst_bits_t := "010";
+    constant U_TYPE : inst_bits_t := "011";
+    constant S_TYPE : inst_bits_t := "100";
+    constant B_TYPE : inst_bits_t := "101";
+    constant J_TYPE : inst_bits_t := "110";
 end package;
