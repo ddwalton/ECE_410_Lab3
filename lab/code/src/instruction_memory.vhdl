@@ -16,7 +16,7 @@ USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY instr_mem IS
     PORT (
-        address : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        address : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (others => '0'); -- added initial value
         data    : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
 END ENTITY;

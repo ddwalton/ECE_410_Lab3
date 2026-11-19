@@ -42,6 +42,7 @@ ARCHITECTURE Behavioral OF controller IS
     -- Each instruction assigns a 10-bit pattern to "controls" that defines its full
     -- control behavior in a single line using the WITH-SELECT statement below.
     SIGNAL controls : STD_LOGIC_VECTOR(9 DOWNTO 0);
+    
     -- added for visibility in simulation
     TYPE instruction IS (LW, SW, ADD, NOP);
     SIGNAL instr : instruction := NOP;
