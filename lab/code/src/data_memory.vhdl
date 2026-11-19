@@ -13,7 +13,7 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
-ENTITY data_mem IS
+ENTITY data_memory IS
     PORT (
         address    : IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
         write_data : IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -21,9 +21,9 @@ ENTITY data_mem IS
         write_en   : IN  STD_LOGIC;
         clock      : IN  STD_LOGIC
     );
-END ENTITY data_mem;
+END ENTITY data_memory;
 
-ARCHITECTURE rtl OF data_mem IS
+ARCHITECTURE rtl OF data_memory IS
     CONSTANT N_ADDR_BITS   : NATURAL := 10;
     CONSTANT MEM_DEPTH     : NATURAL := 2**N_ADDR_BITS; -- 1024 bytes
     CONSTANT MAX_WORD_ADDR : NATURAL := MEM_DEPTH - 4;  -- 1020

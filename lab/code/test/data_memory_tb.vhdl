@@ -2,10 +2,10 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
-ENTITY data_mem_tb IS
-END ENTITY data_mem_tb;
+ENTITY data_memory_tb IS
+END ENTITY data_memory_tb;
 
-ARCHITECTURE sim OF data_mem_tb IS
+ARCHITECTURE sim OF data_memory_tb IS
     CONSTANT CLK_PERIOD : TIME := 10 ns;
 
     SIGNAL address    : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -16,7 +16,7 @@ ARCHITECTURE sim OF data_mem_tb IS
     SIGNAL sim_done   : BOOLEAN   := FALSE;
 BEGIN
     -- Instantiate Device Under Test
-    dut : ENTITY work.data_mem
+    dut : ENTITY work.data_memory
         PORT MAP (
             address    => address,
             write_data => write_data,
