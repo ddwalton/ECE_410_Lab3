@@ -10,7 +10,7 @@
 --                3-bit control signal (alu_ctrl).
 --                'zero_flag' = '1' when result = 0.
 ------------------------------------------------------------------------
-
+-- Did not change anything here
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;

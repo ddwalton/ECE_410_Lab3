@@ -9,45 +9,53 @@
 -- Description  : Top-level RISC-V CPU combining single-cycle datapath and control logic.
 --                Executes basic load, store, and arithmetic instructions.
 ------------------------------------------------------------------------
-
+-- connects the datapath and controller
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY single_cycle_riscv IS
     PORT (
-        clock     : IN STD_LOGIC;
+        clock    : IN  STD_LOGIC;
         out_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
 END ENTITY;
 
 ARCHITECTURE Structural OF single_cycle_riscv IS
-    SIGNAL zero_flag                       : STD_LOGIC                     := '0';
-    SIGNAL pc, pc_next                     : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL instruction, ext_imm, alu_result: STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL rs1_data, rs2_data, rd_data     : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL mem_we                          : STD_LOGIC; -- data memory write enable
-    SIGNAL rd_we                           : STD_LOGIC; 
-    SIGNAL funct7_bit                      : STD_LOGIC;
-    SIGNAL alu_sel, res_sel                : STD_LOGIC;
-    SIGNAL funct3                          : STD_LOGIC_VECTOR(2 DOWNTO 0);
-    SIGNAL imm_sel                         : STD_LOGIC_VECTOR(2 DOWNTO 0);
-    SIGNAL alu_ctrl                        : STD_LOGIC_VECTOR(2 DOWNTO 0);
-    SIGNAL opcode                          : STD_LOGIC_VECTOR(6 DOWNTO 0);
-
+    SIGNAL zero_flag : STD_LOGIC;
+    SIGNAL opcode : STD_LOGIC_VECTOR(6 DOWNTO 0);
+    SIGNAL funct3, imm_sel, alu_ctrl : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL funct7_bit : STD_LOGIC;
+    SIGNAL Alu_src, Res_sel, Mem_we, rd_we, Out_en : STD_LOGIC;
 BEGIN
-
     datapath : ENTITY work.lw_sw_datapath(structural)
-        PORT MAP(
-            clock       => clock,
-            -- TODO: complete datapath port connections
-            
-            out_data   => out_data
+        PORT MAP (
+            clock => clock,
+            Mem_we => Mem_we,
+            rd_we => rd_we,
+            Alu_src => Alu_src,
+            Res_sel => Res_sel,
+            Out_en => Out_en,
+            imm_sel => imm_sel,
+            alu_ctrl => alu_ctrl,
+            opcode => opcode,
+            funct3 => funct3,
+            funct7_bit => funct7_bit,
+            zero_flag => zero_flag,
+            out_data => out_data
         );
 
-    control_unit : ENTITY work.controller(behavioral)
-        PORT MAP(
-            zero_flag   => zero_flag,
-            -- TODO: complete controller port connections
+    control_unit : ENTITY work.controller(Behavioral)
+        PORT MAP (
+            opcode => opcode,
+            funct3 => funct3,
+            funct7_bit => funct7_bit,
+            zero_flag => zero_flag,
+            Alu_src => Alu_src,
+            Res_sel => Res_sel,
+            Mem_we => Mem_we,
+            rd_we => rd_we,
+            Out_en => Out_en,
+            imm_sel => imm_sel,
+            alu_ctrl => alu_ctrl
         );
-END Structural;
+END ARCHITECTURE;
