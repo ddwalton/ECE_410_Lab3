@@ -15,8 +15,8 @@ ARCHITECTURE rtl OF extend_unit IS
     FUNCTION zext(arg : STD_LOGIC_VECTOR; target_len : POSITIVE := 32) RETURN STD_LOGIC_VECTOR IS
         VARIABLE result : STD_LOGIC_VECTOR(target_len - 1 DOWNTO 0) := (OTHERS => '0');
     BEGIN
-        -- LSBs become arg, MSBs remain '0'
-        result(arg'length - 1 DOWNTO 0) := arg;
+        -- MSBs become arg, LSBs remain '0'
+        result(target_len - 1 DOWNTO target_len - arg'length) := arg;
         RETURN result;
     END FUNCTION;
 
