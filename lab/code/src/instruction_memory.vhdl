@@ -38,12 +38,14 @@ ARCHITECTURE rtl OF instr_mem IS
     SIGNAL addr_int : INTEGER := 0;
 
 BEGIN
-    addr_int <= to_integer(unsigned(address(9 DOWNTO 0))); -- Address conversion fits 1 KB of ROM
+    -- Address conversion fits 1 KB of ROM
+    addr_int <= 0 WHEN is_x(address(9 DOWNTO 0)) ELSE to_integer(unsigned(address(9 DOWNTO 0))); 
 
     -- read 4 consecutive bytes form one 32-bit word
     data <= ROM(addr_int + 3) &
             ROM(addr_int + 2) &
             ROM(addr_int + 1) &
-            ROM(addr_int);
+            ROM(addr_int)
+            WHEN addr_int <= 1020 ELSE (OTHERS => '0');
 
 END ARCHITECTURE rtl;

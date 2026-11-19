@@ -40,7 +40,7 @@ ARCHITECTURE rtl OF data_memory IS
     SIGNAL addr_int : NATURAL RANGE 0 TO MEM_DEPTH - 1 := 0;
 BEGIN
     -- Convert lower 10 bits of 32-bit address to integer
-    addr_int <= to_integer(unsigned(address(N_ADDR_BITS - 1 DOWNTO 0)));
+    addr_int <= 0 WHEN is_x(address(N_ADDR_BITS - 1 DOWNTO 0)) ELSE to_integer(unsigned(address(N_ADDR_BITS - 1 DOWNTO 0)));
 
     -- Combinational read in little-endian order with bounds protection
     data <= RAM(addr_int + 3) & RAM(addr_int + 2) & RAM(addr_int + 1) & RAM(addr_int)
