@@ -8,6 +8,7 @@ ghdl -a lab/code/src/data_memory.vhdl
 ghdl -a lab/code/src/extend_unit.vhdl
 ghdl -a lab/code/src/instruction_memory.vhdl
 ghdl -a lab/code/src/mux_2to1.vhdl
+ghdl -a lab/code/src/branch_comparator.vhdl
 ghdl -a lab/code/src/program_counter.vhdl
 ghdl -a lab/code/src/register_file.vhdl
 ghdl -a lab/code/src/tri_state_buffer.vhd

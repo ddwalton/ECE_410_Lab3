@@ -54,12 +54,14 @@ ARCHITECTURE Behavioral OF controller IS
 
     -- Instruction opcodes. add new values for each instruction
     CONSTANT OPCODE_LW  : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0000011";
+    CONSTANT OPCODE_I   : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0010011";
     CONSTANT OPCODE_SW  : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0100011";
     CONSTANT OPCODE_R   : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0110011";
     CONSTANT OPCODE_B   : STD_LOGIC_VECTOR(6 DOWNTO 0) := "1100011";
 
     -- Control signals per instruction
     CONSTANT CTRL_LW  : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "01110010100";
+    CONSTANT CTRL_ADDI : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "01010010100";
     CONSTANT CTRL_SW  : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "01001100100";
     CONSTANT CTRL_ADD : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "00010000100";
     CONSTANT CTRL_NOP : STD_LOGIC_VECTOR(N_CONTROL_BITS-1 DOWNTO 0) := "00000000000";
@@ -73,6 +75,10 @@ BEGIN
                 controls <= CTRL_LW;
             WHEN OPCODE_SW =>
                 controls <= CTRL_SW;
+            WHEN OPCODE_I =>
+                IF funct3 = "000" THEN
+                    controls <= CTRL_ADDI;
+                END IF;
             WHEN OPCODE_R =>
                 IF funct3 = "000" AND funct7_bit = '0' THEN
                     controls <= CTRL_ADD;

@@ -83,7 +83,7 @@ BEGIN
         PORT MAP (
             rs1 => rs1_data,
             rs2 => rs2_data,
-            br_ctrl => funct3,
+            br_ctrl => instruction(14 DOWNTO 12), -- funct3
             br_taken => br_taken
         );
 
